@@ -1,11 +1,10 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Course } from '../model/course';
+import { Course } from '../../model/course';
 
 import { MatButtonModule } from '@angular/material/button';
-import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
-import { ActivatedRoute, Router } from '@angular/router';
-import { CategoryPipe } from '../../shared/pipes/category.pipe';
+import { MatTableModule } from '@angular/material/table';
+import { CategoryPipe } from '../../../shared/pipes/category.pipe';
 
 @Component({
   selector: 'app-courses-list',

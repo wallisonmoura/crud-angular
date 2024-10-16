@@ -4,23 +4,24 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
 import { MatCardModule } from '@angular/material/card';
-import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
-import { Course } from '../model/course';
-import { CoursesService } from '../services/courses.service';
-import { catchError, Observable, of } from 'rxjs';
-import { CommonModule } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
-import { ErrorDialogComponent } from '../../shared/components/error-dialog/error-dialog.component';
-import { CategoryPipe } from '../../shared/pipes/category.pipe';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CoursesListComponent } from '../courses-list/courses-list.component';
+import { catchError, Observable, of } from 'rxjs';
+import { ErrorDialogComponent } from '../../../shared/components/error-dialog/error-dialog.component';
+import { CategoryPipe } from '../../../shared/pipes/category.pipe';
+import { CoursesListComponent } from '../../components/courses-list/courses-list.component';
+import { Course } from '../../model/course';
+import { CoursesService } from '../../services/courses.service';
+
 
 @Component({
   selector: 'app-courses',
   standalone: true,
-  imports: [MatIconModule, MatButtonModule, MatCardModule, MatToolbarModule, MatProgressSpinnerModule, CoursesListComponent, CommonModule, CategoryPipe],
+  imports: [MatCardModule, MatToolbarModule, MatProgressSpinnerModule, CoursesListComponent, AsyncPipe, CategoryPipe],
   templateUrl: './courses.component.html',
   styleUrl: './courses.component.scss'
 })
