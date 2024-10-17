@@ -16,6 +16,8 @@ import { CategoryPipe } from '../../../shared/pipes/category.pipe';
 import { CoursesListComponent } from '../../components/courses-list/courses-list.component';
 import { Course } from '../../model/course';
 import { CoursesService } from '../../services/courses.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
 
 
 @Component({
@@ -26,7 +28,7 @@ import { CoursesService } from '../../services/courses.service';
   styleUrl: './courses.component.scss'
 })
 export class CoursesComponent implements OnInit {
-  courses$: Observable<Course[]>;
+  courses$: Observable<Course[]> | null = null;
   displayedColumns = ['name', 'category', 'actions']
 
   // coursesServices: CoursesService;
@@ -35,9 +37,13 @@ export class CoursesComponent implements OnInit {
     private coursesServices: CoursesService,
     public dialog: MatDialog,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar,
   ) {
-    // this.coursesServices = new CoursesService();
+    this.refresh()
+  }
+
+  refresh() {
     this.courses$ = this.coursesServices.list().pipe(
       catchError(error => {
         this.onError('Erro ao carregar cursos.')
@@ -60,6 +66,28 @@ export class CoursesComponent implements OnInit {
 
   onEdit(course: Course) {
     this.router.navigate(['edit', course._id], { relativeTo: this.route })
+  }
+
+  onRemove(course: Course) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      data: 'Tem certeza que deseja remover esse curso?'
+    });
+
+    dialogRef.afterClosed().subscribe((result: boolean) => {
+      if (result) {
+        this.coursesServices.remove(course._id).subscribe({
+          next: () => {
+            this.refresh(),
+              this.snackBar.open('Curso removido com sucesso.', 'X', {
+                duration: 5000,
+                verticalPosition: 'top',
+                horizontalPosition: 'center'
+              })
+          },
+          error: () => this.onError('Erro ao tentar remover curso.')
+        })
+      }
+    });
   }
 
 }
