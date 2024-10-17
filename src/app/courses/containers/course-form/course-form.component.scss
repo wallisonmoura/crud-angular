@@ -7,6 +7,10 @@ mat-card {
 
   mat-card-content {
     padding: 0;
+
+    mat-form-field {
+      margin-bottom: 2rem;
+    }
   }
 
   mat-card-actions {
