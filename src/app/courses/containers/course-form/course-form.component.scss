@@ -3,13 +3,17 @@ mat-card {
   margin: 2em auto;
   text-align: center;
   padding: 1em;
-  gap: 2rem;
+
+  // gap: 1rem;
+  mat-toolbar {
+    margin-bottom: 1rem;
+  }
 
   mat-card-content {
     padding: 0;
 
     mat-form-field {
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
     }
   }
 
