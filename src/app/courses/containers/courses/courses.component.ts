@@ -1,37 +1,39 @@
-import { Component, OnInit } from '@angular/core';
-
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
+import { Component, OnInit, ViewChild } from '@angular/core';
 
 import { MatCardModule } from '@angular/material/card';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
+import { MatPaginator, PageEvent, MatPaginatorModule } from '@angular/material/paginator';
+
 import { AsyncPipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { catchError, Observable, of } from 'rxjs';
+import { catchError, Observable, of, tap } from 'rxjs';
 import { ErrorDialogComponent } from '../../../shared/components/error-dialog/error-dialog.component';
-import { CategoryPipe } from '../../../shared/pipes/category.pipe';
 import { CoursesListComponent } from '../../components/courses-list/courses-list.component';
 import { Course } from '../../model/course';
 import { CoursesService } from '../../services/courses.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConfirmationDialogComponent } from '../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { CoursePage } from '../../model/course-page';
 
 
 @Component({
   selector: 'app-courses',
   standalone: true,
-  imports: [MatCardModule, MatToolbarModule, MatProgressSpinnerModule, CoursesListComponent, AsyncPipe, CategoryPipe],
+  imports: [MatCardModule, MatToolbarModule, MatPaginatorModule, MatProgressSpinnerModule, CoursesListComponent, AsyncPipe],
   templateUrl: './courses.component.html',
   styleUrl: './courses.component.scss'
 })
 export class CoursesComponent implements OnInit {
-  courses$: Observable<Course[]> | null = null;
-  displayedColumns = ['name', 'category', 'actions']
 
-  // coursesServices: CoursesService;
+  courses$: Observable<CoursePage> | null = null;
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  pageIndex = 0;
+  pageSize = 10;
 
   constructor(
     private coursesServices: CoursesService,
@@ -43,11 +45,15 @@ export class CoursesComponent implements OnInit {
     this.refresh()
   }
 
-  refresh() {
-    this.courses$ = this.coursesServices.list().pipe(
+  refresh(pageEvent: PageEvent = { length: 0, pageIndex: 0, pageSize: 10 }) {
+    this.courses$ = this.coursesServices.list(pageEvent.pageIndex, pageEvent.pageSize).pipe(
+      tap(() => {
+        this.pageIndex = pageEvent.pageIndex;
+        this.pageSize = pageEvent.pageSize;
+      }),
       catchError(error => {
         this.onError('Erro ao carregar cursos.')
-        return of([])
+        return of({ courses: [], totalElements: 0, totalPages: 0 })
       })
     )
   }
